@@ -5,6 +5,7 @@
 - **Printable PDF / קובץ להדפסה:** `peerprint-rolls-file-guide.pdf`
 
 Contact / יצירת קשר: Stickers@peerprint.com
+- **Offset (sheetfed) guide / מדריך אופסט:** `offset/index.html` and `offset/peerprint-offset-file-guide.pdf`
 
 ---
 
