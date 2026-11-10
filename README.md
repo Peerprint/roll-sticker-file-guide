@@ -5,6 +5,7 @@
 |---|---|---|
 | Roll stickers / מדבקות בגלילים | [`index.html`](index.html) · [`PDF`](peerprint-rolls-file-guide.pdf) | [`en/index.html`](en/index.html) · [`PDF`](en/peerprint-rolls-file-guide-en.pdf) |
 | Offset / אופסט | [`offset/index.html`](offset/index.html) · [`PDF`](offset/peerprint-offset-file-guide.pdf) | [`offset/en/index.html`](offset/en/index.html) · [`PDF`](offset/en/peerprint-offset-file-guide-en.pdf) |
+| Roll direction / כיוון גלגול | [`roll-direction/index.html?lang=he`](roll-direction/index.html?lang=he) · [`PDF`](roll-direction/peerprint-roll-direction-guide-he.pdf) | [`roll-direction/index.html?lang=en`](roll-direction/index.html?lang=en) · [`PDF`](roll-direction/peerprint-roll-direction-guide-en.pdf) |
 
 Live pages / אתר: https://peerprint.github.io/roll-sticker-file-guide/
 

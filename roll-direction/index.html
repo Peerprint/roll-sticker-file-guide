@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roll direction guide · Peerprint</title>
+<style>
+:root{
+  /* Brand colours – change here to match your identity */
+  --brand:#0f8a5f; --brand-d:#0b6b49; --accent:#f5a623;
+  --ink:#1c2733; --mute:#5b6b7b; --bg:#f4f7fa; --card:#fff; --line:#dbe3ea;
+  --ok:#1f9d55; --bad:#d64545;
+  --print:#2b6cb0; --label:#f7c15a; --liner:#b9c6d3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;font-family:"Heebo","Assistant","Segoe UI",Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;font-size:17px}
+h1,h2,h3{line-height:1.25;margin:0 0 .4em}
+h2{font-size:1.65rem;display:flex;align-items:center;gap:.6rem}
+h2 .n{display:inline-grid;place-items:center;min-width:2.1rem;height:2.1rem;border-radius:50%;background:var(--brand);color:#fff;font-size:1.1rem}
+h3{font-size:1.1rem;color:var(--brand-d)}
+p{margin:.3em 0 .8em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+button{font:inherit;cursor:pointer}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:10px;height:58px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--brand-d);letter-spacing:.3px}
+.spacer{flex:1}
+.nav{display:flex;gap:4px;overflow:auto}
+.nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-size:.85rem;padding:5px 10px;border-radius:99px}
+.nav a:hover{background:#e8f3ee}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;font-size:.9rem;color:var(--ink)}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-d)}
+
+/* hero */
+.hero{padding:34px 0 10px}
+.hero .wrap{display:grid;grid-template-columns:1fr 190px;gap:24px;align-items:center}
+.hero h1{font-size:2.3rem;color:var(--brand-d)}
+.hero .sub{font-size:1.2rem;color:var(--mute)}
+.why{background:#fff;border:1px solid var(--line);border-inline-start:5px solid var(--accent);border-radius:12px;padding:12px 16px;margin-top:14px}
+
+/* sections */
+section.sec{padding:34px 0 10px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 3px rgba(20,40,60,.05)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rule{background:#e8f5ee;border:1px solid #bfe3d0;border-radius:12px;padding:10px 14px;margin:14px 0}
+.tip{background:#fff8e6;border:1px solid #f3dfaa;border-radius:12px;padding:10px 14px;margin:14px 0}
+svg{display:block;max-width:100%;height:auto}
+.ltr{direction:ltr}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:none}
+
+/* P man */
+.arm{fill:none;stroke:var(--brand);stroke-width:6;stroke-linecap:round}
+.al{transform-origin:20px 98px}
+.ar{transform-origin:36px 100px}
+.wave{animation:wave .9s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-20deg)}to{transform:rotate(30deg)}}
+.bob{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+
+/* section 1 */
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.vcard{background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 8px 12px;text-align:center}
+.vcard.ok{border-color:var(--ok)}.vcard.bad{border-color:#f0c4c4}
+.stk{fill:#fff;stroke:#b8c4d0;stroke-width:2}
+.pill rect{fill:var(--bad)}.pill.ok rect{fill:var(--ok)}
+.pill text{fill:#fff;font-size:11px;font-weight:700;font-family:inherit}
+.turn{transform:rotate(var(--a))}
+.vcard.in .turn{animation:turnTo 1.2s cubic-bezier(.3,1.4,.5,1) .25s both}
+@keyframes turnTo{from{transform:rotate(0)}to{transform:rotate(var(--a))}}
+.verdict{font-weight:700}
+.vcard.ok .verdict{color:var(--ok)}.vcard.bad .verdict{color:var(--bad)}
+.vcard small{display:block;color:var(--mute);font-size:.85rem;line-height:1.35}
+.turnbox{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:center;margin-top:16px}
+#turnStatus{font-size:1.15rem;font-weight:700}
+#turnStatus.ok{color:var(--ok)}#turnStatus.bad{color:var(--bad)}
+
+/* section 2 */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:8px 14px;border-inline-end:1px solid var(--line)}
+.seg button:last-child{border-inline-end:0}
+.seg button[aria-pressed=true]{background:var(--brand);color:#fff}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:8px 0}
+.ctl b{min-width:5.5em}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-inline-end:5px;vertical-align:middle}
+.spin{transform-origin:140px 150px;animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.belt{animation:belt 2.2s linear infinite}
+@keyframes belt{to{transform:translateX(120px)}}
+.pf{transform:scaleY(var(--flip,1));transition:transform .7s}
+.pr{transform:rotate(var(--rot,0deg));transition:transform .7s}
+.nowshow{margin-top:8px;font-weight:700;color:var(--brand-d);font-size:1.05rem}
+.dash{stroke-dasharray:7 6;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-26}}
+
+/* section 3 */
+.chart{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;direction:ltr}
+.rowlbl{grid-column:1/-1;font-weight:700;color:var(--mute);font-size:.9rem;margin-top:4px}
+.pos{position:relative;text-align:center;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px 6px 10px;transition:.25s}
+.pos:hover{border-color:var(--brand)}
+.pos .num{position:absolute;top:6px;inset-inline-start:8px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.95rem}
+.pos .tg{font-size:.82rem;color:var(--mute);line-height:1.3;min-height:2.6em;direction:inherit}
+.pos.sel{border-color:var(--brand);box-shadow:0 0 0 4px rgba(15,138,95,.18);background:#f1faf6;animation:pulse 1.6s ease-in-out infinite}
+.pos.sel .num{background:var(--brand)}
+@keyframes pulse{50%{box-shadow:0 0 0 9px rgba(15,138,95,.06)}}
+.mbelt{}
+.pos.sel .mbelt{animation:mbelt 1.5s linear infinite}
+@keyframes mbelt{to{transform:translateX(60px)}}
+.result{display:flex;align-items:center;gap:16px;background:var(--brand);color:#fff;border-radius:16px;padding:14px 18px;margin-top:16px;flex-wrap:wrap}
+.result .big{font-size:3rem;font-weight:800;line-height:1;background:#fff;color:var(--brand-d);width:78px;height:78px;border-radius:16px;display:grid;place-items:center}
+.result .d{font-size:1.15rem;font-weight:600}
+.result small{display:block;opacity:.9;font-weight:400}
+ul.clean{margin:.3em 0;padding-inline-start:1.3em}ul.clean li{margin:.25em 0}
+
+/* section 4 */
+.rollsvg[data-focus=od] .idg{opacity:.18}.rollsvg[data-focus=id] .odg{opacity:.18}
+.dl{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:420;animation:draw 3.2s ease-in-out infinite}
+@keyframes draw{0%{stroke-dashoffset:420}40%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:420}}
+.dtxt{font-weight:800;font-size:15px;font-family:inherit}
+.al-b{transition:transform .7s cubic-bezier(.3,1.3,.5,1)}
+.al-g{transition:transform .7s}
+.alsvg[data-al=top] .al-b{transform:translateY(0)}.alsvg[data-al=top] .al-g{transform:translateY(0)}
+.alsvg[data-al=center] .al-b{transform:translateY(35px)}.alsvg[data-al=center] .al-g{transform:translateY(80px)}
+.alsvg[data-al=bottom] .al-b{transform:translateY(70px)}.alsvg[data-al=bottom] .al-g{transform:translateY(160px)}
+.alsvg[data-al=none] .al-g{opacity:0}.alsvg[data-al=none] svg-wrap{opacity:.5}
+.alsvg[data-al=none] .al-b{transform:translateY(35px);opacity:.5}
+.inputs{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}
+.inputs label{display:flex;flex-direction:column;font-size:.9rem;color:var(--mute);gap:3px}
+.inputs input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:10px;width:170px;direction:ltr;text-align:start}
+.summary{white-space:pre-wrap;background:#0f1b26;color:#e6f2ec;border-radius:12px;padding:14px 16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;margin:10px 0;direction:inherit}
+
+footer{margin:40px 0 0;background:#fff;border-top:1px solid var(--line);padding:22px 0;color:var(--mute);font-size:.95rem}
+footer .wrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+footer b{color:var(--ink)}
+.paused *{animation-play-state:paused!important}
+
+@media (max-width:820px){
+  .hero .wrap{grid-template-columns:1fr}.hero svg{margin:auto}
+  .grid2,.turnbox{grid-template-columns:1fr}
+  .cards4,.chart{grid-template-columns:repeat(2,1fr)}
+  .nav{display:none}
+  h2{font-size:1.4rem}.hero h1{font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}
+}
+
+/* ===== PDF / print ===== */
+@page{size:A4;margin:11mm}
+@media print{
+  body{background:#fff;font-size:12.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .noprint,.top{display:none!important}
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .panel,.vcard,.pos,.rule,.tip,.result,.why{box-shadow:none!important;break-inside:avoid}
+  .hero{padding:0}.hero h1{font-size:1.7rem}
+  section.sec{padding:14px 0 0;break-inside:avoid}
+  #s2{break-before:page}#s3{break-before:page}#s4{break-before:page}
+  #rollFront{max-width:250px;margin:auto}#alSvg svg{max-width:300px}
+  hr{margin:10px 0!important}.summary{margin:6px 0}
+  .hero .wrap{grid-template-columns:1fr 150px!important}
+  .grid2{grid-template-columns:1fr 1fr!important}
+  .turnbox{grid-template-columns:230px 1fr!important}
+  .cards4,.chart{grid-template-columns:repeat(4,1fr)!important}
+  section.sec{break-inside:auto}
+  .hero svg{width:150px}
+  .reveal{break-inside:avoid}
+  .panel{padding:12px}
+  p{margin:.2em 0 .5em}
+  h2{font-size:1.25rem}
+  .wrap{max-width:none;padding:0}
+  .pos.sel{animation:none}
+  footer{margin-top:8px;padding:6px 0;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<header class="top noprint">
+  <div class="wrap">
+    <div class="logo">
+      <svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15.5" fill="none" stroke="var(--brand)" stroke-width="2"/><path d="M12.5 25V9.5h5.2a4.4 4.4 0 0 1 0 8.8h-5.2" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>peerprint</span>
+    </div>
+    <nav class="nav">
+      <a href="#s1" data-i18n="nav1"></a><a href="#s2" data-i18n="nav2"></a><a href="#s3" data-i18n="nav3"></a><a href="#s4" data-i18n="nav4"></a>
+    </nav>
+    <div class="spacer"></div>
+    <button class="btn" id="btnPause" aria-pressed="false"></button>
+    <button class="btn" id="btnLang"></button>
+    <button class="btn primary" id="btnPdf" data-i18n="btnPdf"></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <h1 data-i18n="heroH"></h1>
+      <div class="sub" data-i18n="heroP"></div>
+      <div class="why" data-i18n="why"></div>
+    </div>
+    <svg viewBox="0 0 190 220" width="190" aria-hidden="true">
+      <circle cx="95" cy="112" r="88" fill="#e8f5ee"/>
+      <g transform="translate(95,112)"><g class="bob"><g id="heroP" transform="scale(1)"></g></g></g>
+    </svg>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- SECTION 1 -->
+<section class="sec" id="s1">
+  <h2 class="reveal"><span class="n">1</span><span data-i18n="s1H"></span></h2>
+  <p class="reveal" data-i18n="s1P"></p>
+  <div class="panel reveal">
+    <div class="cards4" id="cards4"></div>
+    <div class="rule" data-i18n="s1rule"></div>
+    <div class="turnbox noprint">
+      <svg viewBox="0 0 220 220" width="220" id="turnSvg" aria-hidden="true">
+        <g transform="translate(110,110)"><g id="turnG" style="transition:transform .7s cubic-bezier(.3,1.4,.5,1)">
+          <rect x="-62" y="-52" width="124" height="104" rx="14" class="stk"/>
+          <g transform="scale(.62)" id="turnP"></g>
+          <path d="M-11 -64L0 -82L11 -64Z" fill="var(--accent)"/>
+        </g></g>
+      </svg>
+      <div>
+        <h3 data-i18n="turnH"></h3>
+        <button class="btn primary" id="turnBtn"></button>
+        <p id="turnStatus" style="margin-top:12px"></p>
+      </div>
+    </div>
+    <div class="tip" data-i18n="s1tip"></div>
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="sec" id="s2">
+  <h2 class="reveal"><span class="n">2</span><span data-i18n="s2H"></span></h2>
+  <p class="reveal" data-i18n="s2P"></p>
+  <div class="panel reveal">
+    <div class="grid2">
+      <div>
+        <h3 data-i18n="q1H"></h3>
+        <p data-i18n="q1P"></p>
+        <div class="ctl"><b data-i18n="woundLbl"></b>
+          <div class="seg" id="segWound"><button data-w="out"></button><button data-w="in"></button></div>
+        </div>
+        <div class="tip" data-i18n="q1tip"></div>
+      </div>
+      <div>
+        <h3 data-i18n="q2H"></h3>
+        <p data-i18n="q2P"></p>
+        <div class="ctl"><b data-i18n="edgeLbl"></b>
+          <div class="seg" id="segEdge"><button data-e="head"></button><button data-e="foot"></button><button data-e="right"></button><button data-e="left"></button></div>
+        </div>
+        <p style="font-size:.92rem;color:var(--mute)" data-i18n="q2note"></p>
+      </div>
+    </div>
+    <div class="nowshow" id="nowShow"></div>
+    <div class="grid2 ltr" style="margin-top:10px;grid-template-columns:5fr 6fr">
+      <div>
+        <svg viewBox="0 0 340 290" id="rollSvg" role="img">
+          <g id="rollBody">
+            <circle cx="140" cy="150" r="98" fill="#e9eef3" stroke="#cbd5df"/>
+            <g class="spin"><circle cx="140" cy="150" r="78" fill="none" stroke="#c3cfda" stroke-width="3" stroke-dasharray="14 12"/><circle cx="140" cy="150" r="58" fill="none" stroke="#c3cfda" stroke-width="3" stroke-dasharray="10 12"/></g>
+            <circle cx="140" cy="150" r="34" fill="#fff" stroke="#b08968" stroke-width="9"/>
+          </g>
+          <g id="rollLayers"></g>
+          <text x="140" y="154" text-anchor="middle" font-size="12" fill="#8a97a5" id="coreTxt"></text>
+        </svg>
+        <div class="legend" style="direction:inherit">
+          <span><i style="background:var(--print)"></i><span data-i18n="lgFace"></span></span>
+          <span><i style="background:var(--label)"></i><span data-i18n="lgLabel"></span></span>
+          <span><i style="background:var(--liner)"></i><span data-i18n="lgLiner"></span></span>
+        </div>
+        <div class="legend" style="color:var(--ink);direction:inherit" id="viewSideCap"></div>
+      </div>
+      <div>
+        <svg viewBox="0 0 420 250" id="beltSvg" role="img" style="--rot:90deg;--flip:1">
+          <defs><clipPath id="bandClip"><rect x="0" y="52" width="420" height="136"/></clipPath>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--accent)"/></marker></defs>
+          <rect x="0" y="52" width="420" height="136" id="band" fill="var(--liner)" opacity=".55"/>
+          <g clip-path="url(#bandClip)"><g class="belt" id="belt"></g></g>
+          <line x1="150" y1="28" x2="404" y2="28" stroke="var(--accent)" stroke-width="4" marker-end="url(#ah)" class="dash"/>
+          <text id="unwTxt" x="150" y="18" font-size="14" font-weight="700" fill="var(--ink)" font-family="inherit"></text>
+          <text id="firstTxt" x="410" y="216" text-anchor="end" font-size="14" font-weight="700" fill="var(--accent)" font-family="inherit"></text>
+          <text id="ghostTxt" x="6" y="238" font-size="12.5" fill="var(--mute)" font-family="inherit"></text>
+        </svg>
+        <div class="legend" style="color:var(--ink);direction:inherit" id="viewFrontCap"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 -->
+<section class="sec" id="s3">
+  <h2 class="reveal"><span class="n">3</span><span data-i18n="s3H"></span></h2>
+  <p class="reveal" data-i18n="s3P"></p>
+  <div class="panel reveal">
+    <div class="chart" id="chart"></div>
+    <div class="result">
+      <div class="big" id="resNum">1</div>
+      <div><div class="d" id="resTxt"></div><small id="resSub"></small></div>
+    </div>
+    <div class="rule" data-i18n="ruleThumb"></div>
+    <h3 data-i18n="mistH"></h3>
+    <ul class="clean"><li data-i18n="m1"></li><li data-i18n="m2"></li><li data-i18n="m3"></li><li data-i18n="m4"></li></ul>
+  </div>
+</section>
+
+<!-- SECTION 4 -->
+<section class="sec" id="s4">
+  <h2 class="reveal"><span class="n">4</span><span data-i18n="s4H"></span></h2>
+  <p class="reveal" data-i18n="s4P"></p>
+  <div class="panel reveal">
+    <div class="grid2">
+      <div class="ltr"><svg viewBox="0 0 360 330" class="rollsvg" id="rollFront" data-focus="both" role="img">
+        <defs><radialGradient id="rg"><stop offset="60%" stop-color="#e9eef3"/><stop offset="100%" stop-color="#d4dde6"/></radialGradient>
+        <marker id="ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="context-stroke"/></marker></defs>
+        <circle cx="180" cy="165" r="150" fill="url(#rg)" stroke="#b9c6d3" stroke-width="2"/>
+        <g fill="none" stroke="#c3cfda" stroke-width="2"><circle cx="180" cy="165" r="120"/><circle cx="180" cy="165" r="95"/><circle cx="180" cy="165" r="75"/></g>
+        <circle cx="180" cy="165" r="52" fill="#fff" stroke="#b08968" stroke-width="12"/>
+        <g class="odg"><line class="dl" x1="57" y1="251" x2="303" y2="79" stroke="var(--brand)" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
+          <rect x="226" y="70" width="112" height="26" rx="13" fill="var(--brand)"/><text class="dtxt" x="282" y="88" text-anchor="middle" fill="#fff" id="odTag"></text></g>
+        <g class="idg"><line class="dl" x1="136" y1="165" x2="224" y2="165" stroke="var(--bad)" marker-start="url(#ar2)" marker-end="url(#ar2)" style="animation-delay:.5s"/>
+          <rect x="124" y="176" width="112" height="26" rx="13" fill="var(--bad)"/><text class="dtxt" x="180" y="194" text-anchor="middle" fill="#fff" id="idTag"></text></g>
+      </svg></div>
+      <div>
+        <div class="seg noprint" id="segFocus" style="margin-bottom:10px"><button data-f="both"></button><button data-f="od"></button><button data-f="id"></button></div>
+        <h3 data-i18n="odH"></h3><p data-i18n="odP"></p>
+        <h3 data-i18n="idH"></h3><p data-i18n="idP"></p>
+        <div class="tip" data-i18n="cores"></div>
+        <div class="inputs">
+          <label><span data-i18n="odIn"></span><input id="odVal" inputmode="decimal" placeholder="mm"></label>
+          <label><span data-i18n="idIn"></span><input id="idVal" inputmode="decimal" placeholder="mm"></label>
+        </div>
+      </div>
+    </div>
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+    <div class="grid2">
+      <div>
+        <h3 data-i18n="fbH"></h3><p data-i18n="fbP"></p>
+        <div class="seg" id="segAl" style="margin:6px 0 10px"><button data-a="none"></button><button data-a="top"></button><button data-a="center"></button><button data-a="bottom"></button></div>
+        <p style="font-size:.92rem;color:var(--mute)" data-i18n="fbNote"></p>
+      </div>
+      <div class="ltr alsvg" id="alSvg" data-al="none">
+        <svg viewBox="0 0 360 250" role="img">
+          <rect x="6" y="6" width="348" height="204" rx="8" fill="var(--liner)" opacity=".5"/>
+          <g transform="translate(0,0)">
+            <rect x="50" y="22" width="110" height="170" rx="10" fill="#fff" stroke="#9fb0c0" stroke-width="2"/>
+            <g transform="translate(105,107) scale(.62)" id="alP1"></g>
+          </g>
+          <g class="al-b">
+            <rect x="200" y="22" width="110" height="96" rx="10" fill="#fff" stroke="#9fb0c0" stroke-width="2"/>
+            <g transform="translate(255,70) scale(.42)" id="alP2"></g>
+          </g>
+          <line class="al-g dash" x1="30" y1="22" x2="330" y2="22" stroke="var(--accent)" stroke-width="3"/>
+          <text id="frontTxt" x="105" y="232" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)" font-family="inherit"></text>
+          <text id="backTxt" x="255" y="232" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)" font-family="inherit"></text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel reveal" style="margin-top:16px">
+    <h3 data-i18n="sumH"></h3>
+    <div class="summary" id="summary"></div>
+    <button class="btn primary noprint" id="copyBtn"></button>
+    <span class="noprint" style="color:var(--mute);font-size:.9rem;margin-inline-start:8px" data-i18n="sumHint"></span>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>Peerprint</b> · since 1942<br><span id="fAddr"></span></div>
+    <div id="fContact" style="direction:ltr;unicode-bidi:plaintext"></div>
+  </div>
+</footer>
+
+<script>
+const T={
+en:{
+ dir:'ltr',langBtn:'עברית',btnPdf:'Save as PDF',pause:'⏸ Pause motion',play:'▶ Play motion',
+ nav1:'1 · Find the head',nav2:'2 · Read the roll',nav3:'3 · Match the number',nav4:'4 · Measure',
+ heroH:'How to tell us your roll direction',
+ heroP:'Four quick steps so we wind your stickers exactly the way your machine needs them.',
+ why:'<b>Why it matters:</b> machines feed a roll in one direction only. If the roll is wound the wrong way, your artwork comes out upside-down or sideways. One number removes all the guesswork.',
+ s1H:'Find the head of your sticker',
+ s1P:'Meet P. His <b>face is the head</b> of the sticker and his <b>feet are the foot</b>. The head is simply the top of your artwork when you read it the right way up.',
+ headPill:'HEAD',
+ okT:'Correct',badT:'Wrong',
+ c1:'Head up – P stands on his feet.',c2:'Upside down – the head is at the bottom.',c3:'Tilted – the head is on the left.',c4:'Tilted – the head is on the right.',
+ s1rule:'<b>Rule:</b> always turn the sticker until P (or your text) stands upright. Now the top is the <b>head</b>, the bottom is the <b>foot</b>, and left and right are exactly as you see them.',
+ s1tip:'<b>Tip:</b> the shape of the label does not decide the head – the artwork does. On a wide label the head can be on the short side. Symmetrical artwork? Draw an arrow on the proof that points to the head.',
+ turnH:'Try it: turn the sticker',turnBtn:'↻ Turn 90°',
+ headAt:'The head is at the',top:'top',right:'right',bottom:'bottom',left:'left',
+ turnOk:'✔ This is how to hold it: head up.',turnBad:'✘ Turn it until P stands up before you describe it.',
+ s2H:'Look at the roll: which way does it open?',
+ s2P:'Hold the roll so the stickers leave it to the right, the way they will feed into the machine. Then answer two questions. Toggle the answers below and watch the roll.',
+ q1H:'Question 1 – Which side faces out?',
+ q1P:'If you can see the <b>printing on the outside</b> of the roll, it is <b>Wound OUT</b> (numbers 1–4). If you only see the plain <b>backing paper (liner)</b> and the printing faces the core, it is <b>Wound IN</b> (numbers 5–8).',
+ woundLbl:'Wound:',woundOut:'OUT',woundIn:'IN',
+ q1tip:'<b>Not sure?</b> Peel one sticker. The printed face is the side away from the backing paper. Clear stickers can look printed when they are not – always check.',
+ q2H:'Question 2 – What leaves the roll first?',
+ q2P:'As the stickers come off, which edge of the artwork goes first? P dives <b>head first</b>, or <b>feet first</b>, or leads with his <b>right</b> or <b>left</b> side.',
+ edgeLbl:'Leading edge:',head:'Head first',foot:'Foot first',rightE:'Right side first',leftE:'Left side first',
+ q2note:'“Right” and “left” are as you look at the artwork when it is upright.',
+ lgFace:'Printed face',lgLabel:'Sticker',lgLiner:'Liner (backing)',
+ viewSide:'Side view of the roll',viewFront:'Looking at the stickers as they leave',
+ outCap:'Printing is on the outside of the roll.',inCap:'Printing is against the core – you only see the liner.',
+ unw:'Unwind direction',first:'this edge leaves first',ghost:'Printed face is hidden – you see the liner side.',
+ nowShow:'Now showing:',
+ s3H:'Match it to the number',
+ s3P:'Your two answers together give one number from 1 to 8. Tap any card to watch it move, or use the answers from step 2.',
+ row1:'Wound OUT – printing on the outside (1–4)',row2:'Wound IN – printing on the inside (5–8)',
+ resLbl:'Your unwind position',
+ ruleThumb:'<b>Rule of thumb:</b> 1–4 = printed side out · 5–8 = printed side in. Within each group: 1 head · 2 foot · 3 right side · 4 left side.',
+ mistH:'Common mistakes',
+ m1:'Judging the direction by how the roll sits on a shelf – always judge it by how it will feed into the machine.',
+ m2:'Mixing up “head first” with “the text reads upright”. If the artwork is rotated on the web they are not the same.',
+ m3:'Forgetting to re-check the number when the label is rotated 90° on the sheet.',
+ m4:'Not sure? Send us a photo of the roll with the first sticker peeled slightly.',
+ s4H:'Measure the roll',
+ s4P:'Two measurements, in millimetres. Use a ruler or tape measure – close is fine.',
+ odH:'Outer roll diameter (green)',odP:'Measure across the whole roll, edge to edge through the centre, at the widest point.',
+ idH:'Inner core diameter (red)',idP:'Measure the empty hole of the cardboard core, from the inside – not including the thickness of the core wall.',
+ cores:'<b>Common cores:</b> 25 mm (1″), 40 mm, 76 mm (3″).',
+ odIn:'Outer diameter (mm)',idIn:'Core inner diameter (mm)',odTag:'Outer Ø',idTag:'Core Ø',
+ foc_both:'Both',foc_od:'Outer Ø',foc_id:'Core Ø',
+ fbH:'Front and back on the same roll?',
+ fbP:'When one roll carries a set – a front label and a back label of different heights – tell us how they line up. Look at both with the head up and choose: align to the <b>top</b>, the <b>centre</b> or the <b>bottom</b>.',
+ fbNote:'The yellow dashed line shows the shared edge or centre line.',
+ al_none:'Not a front/back set',al_top:'Top',al_center:'Center',al_bottom:'Bottom',front:'Front',back:'Back',
+ sumH:'Your order details',copyBtn:'Copy',copied:'Copied ✔',sumHint:'Paste this into your order or email.',
+ sumPos:'Unwind position',sumOD:'Outer roll diameter',sumID:'Core inner diameter',sumAl:'Front/back alignment',sumNone:'not a front/back set',
+ fAddr:'4 HaMasger St., Ness Ziona, Israel',fTel:'Tel',fFax:'Fax'
+},
+he:{
+ dir:'rtl',langBtn:'English',btnPdf:'שמירה כ-PDF',pause:'⏸ עצירת תנועה',play:'▶ הפעלת תנועה',
+ nav1:'1 · מצאו את הראש',nav2:'2 · קראו את הגליל',nav3:'3 · התאימו למספר',nav4:'4 · מדידות',
+ heroH:'איך להגדיר לנו את כיוון הגליל',
+ heroP:'ארבעה צעדים קצרים כדי שנגלגל את המדבקות בדיוק כמו שהמכונה שלכם צריכה.',
+ why:'<b>למה זה חשוב:</b> מכונות מזינות גליל בכיוון אחד בלבד. אם הגליל מגולגל הפוך, הגרפיקה תצא הפוכה או מסובבת. מספר אחד מבטל כל אי-הבנה.',
+ s1H:'מצאו את ראש המדבקה',
+ s1P:'הכירו את P. <b>הפנים שלו הם ראש</b> המדבקה וה<b>רגליים הן התחתית</b>. הראש הוא פשוט החלק העליון של הגרפיקה כשקוראים אותה בצורה ישרה.',
+ headPill:'ראש',
+ okT:'נכון',badT:'לא נכון',
+ c1:'ראש למעלה – P עומד על הרגליים.',c2:'הפוך – הראש נמצא למטה.',c3:'מסובב – הראש נמצא בצד שמאל.',c4:'מסובב – הראש נמצא בצד ימין.',
+ s1rule:'<b>כלל:</b> תמיד סובבו את המדבקה עד ש-P (או הטקסט) עומד ישר. אז הצד העליון הוא <b>הראש</b>, התחתון הוא <b>הרגל</b>, וימין ושמאל הם בדיוק כפי שאתם רואים.',
+ s1tip:'<b>טיפ:</b> צורת המדבקה לא קובעת את הראש – הגרפיקה קובעת. במדבקה רחבה הראש יכול להיות בצד הקצר. גרפיקה סימטרית? סמנו על ההדמיה חץ שמצביע על הראש.',
+ turnH:'נסו בעצמכם: סובבו את המדבקה',turnBtn:'↻ סיבוב 90°',
+ headAt:'הראש נמצא',top:'למעלה',right:'מימין',bottom:'למטה',left:'משמאל',
+ turnOk:'✔ ככה מחזיקים: ראש למעלה.',turnBad:'✘ סובבו עד ש-P עומד ישר ורק אז תארו.',
+ s2H:'הסתכלו על הגליל: לאיזה כיוון הוא נפתח?',
+ s2P:'החזיקו את הגליל כך שהמדבקות יוצאות ימינה, כמו שיזינו אותו למכונה. ענו על שתי שאלות. לחצו על התשובות למטה וצפו בגליל.',
+ q1H:'שאלה 1 – איזה צד פונה החוצה?',
+ q1P:'אם רואים את <b>ההדפסה מבחוץ</b> על הגליל, זה <b>גלגול חיצוני (Wound OUT)</b> – מספרים <bdi>1–4</bdi>. אם רואים רק את <b>נייר הגב (ליינר)</b> וההדפסה פונה אל הליבה, זה <b>גלגול פנימי (Wound IN)</b> – מספרים <bdi>5–8</bdi>.',
+ woundLbl:'סוג הגלגול:',woundOut:'גלגול חיצוני',woundIn:'גלגול פנימי',
+ q1tip:'<b>לא בטוחים?</b> קלפו מדבקה אחת. צד ההדפסה הוא הצד המרוחק מנייר הגב. מדבקות שקופות עלולות להיראות מודפסות כשהן לא – תמיד בדקו.',
+ q2H:'שאלה 2 – מה יוצא ראשון מהגליל?',
+ q2P:'כשהמדבקות יוצאות, איזה קצה של הגרפיקה יוצא קודם? P צולל <b>ראש קודם</b>, או <b>רגליים קודם</b>, או מוביל עם הצד <b>הימני</b> או <b>השמאלי</b> שלו.',
+ edgeLbl:'הקצה המוביל:',head:'הראש ראשון',foot:'הרגל ראשונה',rightE:'צד ימין ראשון',leftE:'צד שמאל ראשון',
+ q2note:'“ימין” ו”שמאל” הם כפי שאתם רואים את הגרפיקה כשהיא ישרה.',
+ lgFace:'צד ההדפסה',lgLabel:'מדבקה',lgLiner:'נייר גב (ליינר)',
+ viewSide:'מבט צד על הגליל',viewFront:'מבט על המדבקות בזמן שהן יוצאות',
+ outCap:'ההדפסה נמצאת בצד החיצוני של הגליל.',inCap:'ההדפסה צמודה לליבה – רואים רק את נייר הגב.',
+ unw:'כיוון הפתיחה',first:'הקצה הזה יוצא ראשון',ghost:'צד ההדפסה מוסתר – רואים את צד נייר הגב.',
+ nowShow:'מוצג עכשיו:',
+ s3H:'התאימו למספר',
+ s3P:'שתי התשובות יחד נותנות מספר אחד בין 1 ל-8. לחצו על כרטיס כדי לראות אותו בתנועה, או השתמשו בתשובות משלב 2.',
+ row1:'גלגול חיצוני – הדפסה בצד החיצוני (<bdi>1–4</bdi>)',row2:'גלגול פנימי – הדפסה בצד הפנימי (<bdi>5–8</bdi>)',
+ resLbl:'כיוון הגלגול שלכם',
+ ruleThumb:'<b>כלל אצבע:</b> <bdi>1–4</bdi> = הדפסה כלפי חוץ · <bdi>5–8</bdi> = הדפסה כלפי פנים. בכל קבוצה: 1 ראש · 2 רגל · 3 צד ימין · 4 צד שמאל.',
+ mistH:'טעויות נפוצות',
+ m1:'קביעת הכיוון לפי איך שהגליל מונח על מדף – תמיד קובעים לפי איך שיוזן למכונה.',
+ m2:'בלבול בין “ראש ראשון” לבין “הטקסט קריא ישר”. כשהגרפיקה מסובבת על הרצועה, אלה לא אותו דבר.',
+ m3:'שוכחים לבדוק שוב את המספר כשהמדבקה מסובבת ב-90° על הגיליון.',
+ m4:'לא בטוחים? שלחו לנו תמונה של הגליל כשהמדבקה הראשונה קלופה מעט.',
+ s4H:'מדדו את הגליל',
+ s4P:'שתי מדידות, במילימטרים. סרגל או מטר גמיש – קירוב מספיק.',
+ odH:'קוטר חיצוני של הגליל (ירוק)',odP:'מדדו את כל הגליל מקצה לקצה דרך המרכז, בנקודה הרחבה ביותר.',
+ idH:'קוטר פנימי של הליבה (אדום)',idP:'מדדו את החור הריק של ליבת הקרטון מבפנים – בלי עובי דופן הליבה.',
+ cores:'<b>ליבות נפוצות:</b> 25 מ"מ (1″), 40 מ"מ, 76 מ"מ (3″).',
+ odIn:'קוטר חיצוני (מ"מ)',idIn:'קוטר פנימי של הליבה (מ"מ)',odTag:'Ø חיצוני',idTag:'Ø ליבה',
+ foc_both:'שניהם',foc_od:'Ø חיצוני',foc_id:'Ø ליבה',
+ fbH:'חזית וגב על אותו גליל?',
+ fbP:'כשגליל אחד נושא סט – מדבקת חזית ומדבקת גב בגבהים שונים – ספרו לנו איך הן מיושרות. הסתכלו על שתיהן כשהראש למעלה ובחרו: ישור ל<b>למעלה</b>, ל<b>מרכז</b> או ל<b>למטה</b>.',
+ fbNote:'הקו הצהוב המקווקו מראה את הקצה או קו האמצע המשותף.',
+ al_none:'לא סט חזית/גב',al_top:'למעלה',al_center:'מרכז',al_bottom:'למטה',front:'חזית',back:'גב',
+ sumH:'פרטי ההזמנה שלכם',copyBtn:'העתקה',copied:'הועתק ✔',sumHint:'הדביקו את זה בהזמנה או במייל.',
+ sumPos:'כיוון גלגול',sumOD:'קוטר חיצוני של הגליל',sumID:'קוטר פנימי של הליבה',sumAl:'יישור חזית/גב',sumNone:'לא סט חזית/גב',
+ fAddr:'רח\' המסגר 4, נס-ציונה',fTel:'טלפון',fFax:'פקס'
+}};
+
+let lang=(new URLSearchParams(location.search).get('lang')||((navigator.language||'').startsWith('he')?'he':'en'));
+if(!T[lang])lang='en';
+const st={wound:'out',edge:'head',al:'none',focus:'both',turn:0};
+const t=k=>T[lang][k];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const EDGES=['head','foot','right','left'];
+const ANG={head:90,foot:-90,right:0,left:180};
+const edgeTxt=e=>t(e==='right'||e==='left'?e+'E':e);
+const posOf=(w,e)=>(w==='out'?0:4)+EDGES.indexOf(e)+1;
+
+/* the P stick character: face = head, shoes = feet */
+function pman(wave){return `<g transform="translate(-49,-77)">
+<path d="M28 128V16H56a29 29 0 0 1 0 58H28" fill="none" stroke="var(--brand)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="50" cy="42" r="3.6" fill="var(--ink)"/><circle cx="67" cy="42" r="3.6" fill="var(--ink)"/>
+<path d="M50 53q8.5 9 17 0" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+<path d="M10 143H46" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+<path class="arm al" d="M20 98L5 84"/><path class="arm ar ${wave?'wave':''}" d="M36 100L56 88"/></g>`}
+
+/* ---------- section 1 ---------- */
+function stickerCard(a,ok,cap){
+  const pill={0:[130,16],90:[222,90],180:[130,166],270:[38,90]}[a];
+  return `<div class="vcard ${ok?'ok':'bad'} reveal"><svg viewBox="0 0 260 180" aria-hidden="true">
+  <rect x="70" y="35" width="120" height="110" rx="14" class="stk"/>
+  <g transform="translate(130,90)"><g class="turn" style="--a:${a}deg"><g transform="scale(.62)">${pman(ok)}</g></g></g>
+  <g class="pill ${ok?'ok':'bad'}" transform="translate(${pill[0]},${pill[1]})"><rect x="-26" y="-10" width="52" height="20" rx="10"/><text y="4" text-anchor="middle">${t('headPill')}</text></g></svg>
+  <div class="verdict">${ok?'✔ '+t('okT'):'✘ '+t('badT')}</div><small>${cap}</small></div>`;
+}
+function renderS1(){
+  $('#cards4').innerHTML=stickerCard(0,true,t('c1'))+stickerCard(180,false,t('c2'))+stickerCard(270,false,t('c3'))+stickerCard(90,false,t('c4'));
+  $('#cards4').style.direction='ltr';
+  $$('#cards4 .vcard small').forEach(s=>s.style.direction=T[lang].dir);
+  $('#turnP').innerHTML=pman(false);
+  $('#turnBtn').textContent=t('turnBtn');
+  updTurn(true);
+  observe();
+}
+function updTurn(noAnim){
+  const g=$('#turnG');g.style.transform=`rotate(${st.turn*90}deg)`;
+  const i=((st.turn%4)+4)%4, names=['top','right','bottom','left'], ok=i===0;
+  const s=$('#turnStatus');s.className=ok?'ok':'bad';
+  s.innerHTML=`${t('headAt')} <u>${t(names[i])}</u><br>${ok?t('turnOk'):t('turnBad')}`;
+}
+
+/* ---------- section 2 ---------- */
+let curRot=90;
+function setRot(target){let d=((target-curRot)%360+540)%360-180;curRot+=d;return curRot}
+function layers(w){
+  const cx=140,cy=150;
+  const L=w==='out'?[['face',116,120],['label',106,116],['liner',98,106]]:[['liner',112,120],['label',102,112],['face',98,102]];
+  const col={face:'var(--print)',label:'var(--label)',liner:'var(--liner)'};
+  let s='';
+  L.forEach(([k,r1,r2])=>{const r=(r1+r2)/2,sw=r2-r1;
+    s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col[k]}" stroke-width="${sw}"/><rect x="${cx}" y="${cy-r2}" width="190" height="${sw}" fill="${col[k]}"/>`;});
+  return s;
+}
+function beltLabels(){
+  let s='';
+  for(let i=0;i<5;i++){const x=i*120-110;
+    s+=`<g transform="translate(${x},0)"><rect x="0" y="70" width="100" height="100" rx="10" class="lab" fill="#fff" stroke="#8fa2b4" stroke-width="2"/>
+    <rect x="90" y="70" width="10" height="100" rx="4" fill="var(--accent)"/>
+    <g transform="translate(46,120)"><g class="pf"><g class="pr"><g transform="scale(.5)" class="pg">${pman(false)}</g></g></g></g></g>`;}
+  $('#belt').innerHTML=s;
+}
+function renderS2(){
+  $$('#segWound button').forEach(b=>{b.textContent=b.dataset.w==='out'?t('woundOut'):t('woundIn');b.setAttribute('aria-pressed',b.dataset.w===st.wound)});
+  $$('#segEdge button').forEach(b=>{b.textContent=edgeTxt(b.dataset.e);b.setAttribute('aria-pressed',b.dataset.e===st.edge)});
+  $('#rollLayers').innerHTML=layers(st.wound);
+  $('#viewSideCap').innerHTML=`<b>${t('viewSide')}</b> – ${st.wound==='out'?t('outCap'):t('inCap')}`;
+  $('#viewFrontCap').innerHTML=`<b>${t('viewFront')}</b>`;
+  const svg=$('#beltSvg'),out=st.wound==='out';
+  svg.style.setProperty('--rot',setRot(ANG[st.edge])+'deg');
+  svg.style.setProperty('--flip',out?1:-1);
+  $$('#belt .pg').forEach(g=>g.style.opacity=out?1:.38);
+  $$('#belt .lab').forEach(r=>r.setAttribute('fill',out?'#fff':'#e4eaf0'));
+  $('#band').setAttribute('fill',out?'var(--liner)':'var(--label)');
+  $('#unwTxt').textContent=t('unw');
+  $('#firstTxt').textContent='▶ '+t('first');
+  $('#ghostTxt').textContent=out?'':t('ghost');
+  $('#nowShow').textContent=`${t('nowShow')} ${out?t('woundOut'):t('woundIn')} · ${edgeTxt(st.edge)}`;
+}
+
+/* ---------- section 3 ---------- */
+function miniCard(p){
+  const out=p<=4,e=EDGES[(p-1)%4],ang=ANG[e],fl=out?1:-1;
+  let items='';for(let i=0;i<5;i++){const x=i*60-40;
+    items+=`<g transform="translate(${x},0)"><rect x="0" y="33" width="46" height="46" rx="6" fill="${out?'#fff':'#e4eaf0'}" stroke="#8fa2b4" stroke-width="1.5"/><rect x="42" y="33" width="4" height="46" rx="2" fill="var(--accent)"/>
+    <g transform="translate(21,56) scale(1,${fl}) rotate(${ang}) scale(.25)" opacity="${out?1:.4}">${pman(false)}</g></g>`;}
+  return `<button class="pos" data-p="${p}" aria-pressed="false"><span class="num">${p}</span>
+  <svg viewBox="0 0 200 112"><defs><clipPath id="mc${p}"><rect x="0" y="28" width="200" height="56"/></clipPath></defs>
+  <rect x="0" y="28" width="200" height="56" fill="${out?'var(--liner)':'var(--label)'}" opacity=".55"/>
+  <g clip-path="url(#mc${p})"><g class="mbelt">${items}</g></g>
+  <path d="M110 14H186" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M180 9L190 14L180 19Z" fill="var(--accent)"/>
+  <text x="100" y="104" text-anchor="middle" font-size="11" fill="#5b6b7b" font-family="inherit">${out?'OUT':'IN'}</text></svg>
+  <div class="tg">${edgeTxt(e)}</div></button>`;
+}
+function renderS3(){
+  let h=`<div class="rowlbl" style="direction:${T[lang].dir}">${t('row1')}</div>`;
+  for(let p=1;p<=4;p++)h+=miniCard(p);
+  h+=`<div class="rowlbl" style="direction:${T[lang].dir}">${t('row2')}</div>`;
+  for(let p=5;p<=8;p++)h+=miniCard(p);
+  $('#chart').innerHTML=h;
+  $$('#chart .tg').forEach(x=>x.style.direction=T[lang].dir);
+  updS3();
+}
+function updS3(){
+  const p=posOf(st.wound,st.edge);
+  $$('#chart .pos').forEach(c=>{const on=+c.dataset.p===p;c.classList.toggle('sel',on);c.setAttribute('aria-pressed',on)});
+  $('#resNum').textContent=p;
+  $('#resTxt').textContent=`${t('resLbl')}: ${p}`;
+  $('#resSub').textContent=`${st.wound==='out'?t('woundOut'):t('woundIn')} · ${edgeTxt(st.edge)}`;
+  $('#resSub').parentNode.parentNode.style.direction=T[lang].dir;
+}
+
+/* ---------- section 4 ---------- */
+function renderS4(){
+  $('#odTag').textContent=t('odTag');$('#idTag').textContent=t('idTag');
+  $$('#segFocus button').forEach(b=>{b.textContent=t('foc_'+b.dataset.f);b.setAttribute('aria-pressed',b.dataset.f===st.focus)});
+  $('#rollFront').dataset.focus=st.focus;
+  $$('#segAl button').forEach(b=>{b.textContent=t('al_'+b.dataset.a);b.setAttribute('aria-pressed',b.dataset.a===st.al)});
+  $('#alSvg').dataset.al=st.al;
+  $('#frontTxt').textContent=t('front');$('#backTxt').textContent=t('back');
+  $('#alP1').innerHTML=pman(false);$('#alP2').innerHTML=pman(false);
+  renderSummary();
+}
+function renderSummary(){
+  const p=posOf(st.wound,st.edge),od=$('#odVal').value.trim(),id=$('#idVal').value.trim();
+  const al=st.al==='none'?t('sumNone'):t('al_'+st.al);
+  $('#summary').textContent=
+`${t('sumPos')}: ${p} (${st.wound==='out'?t('woundOut'):t('woundIn')}, ${edgeTxt(st.edge)})
+${t('sumOD')}: ${od?od+' mm':'___ mm'}
+${t('sumID')}: ${id?id+' mm':'___ mm'}
+${t('sumAl')}: ${al}`;
+}
+
+/* ---------- shell ---------- */
+function applyLang(){
+  const d=T[lang];
+  document.documentElement.lang=lang;document.documentElement.dir=d.dir;
+  document.title=lang==='he'?'מדריך כיוון גליל · Peerprint':'Roll direction guide · Peerprint';
+  $$('[data-i18n]').forEach(el=>el.innerHTML=d[el.dataset.i18n]||'');
+  $('#btnLang').textContent=d.langBtn;
+  $('#btnPause').textContent=document.body.classList.contains('paused')?d.play:d.pause;
+  $('#fAddr').textContent=d.fAddr;
+  $('#fContact').innerHTML=`${d.fTel}: 08-6226222 · ${d.fFax}: 08-6226200<br>stickers@peerprint.com · www.peerprint.com`;
+  $('#copyBtn').textContent=d.copyBtn;
+  $('#heroP').innerHTML=pman(true);
+  renderS1();renderS2();renderS3();renderS4();
+}
+let io;
+function observe(){
+  if(!('IntersectionObserver' in window)){$$('.reveal').forEach(e=>e.classList.add('in'));return}
+  io=io||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+  $$('.reveal:not(.in)').forEach(e=>io.observe(e));
+}
+function sync(){renderS2();updS3();renderSummary()}
+
+$('#segWound').addEventListener('click',e=>{const b=e.target.closest('button');if(b){st.wound=b.dataset.w;sync()}});
+$('#segEdge').addEventListener('click',e=>{const b=e.target.closest('button');if(b){st.edge=b.dataset.e;sync()}});
+$('#chart').addEventListener('click',e=>{const c=e.target.closest('.pos');if(c){const p=+c.dataset.p;st.wound=p<=4?'out':'in';st.edge=EDGES[(p-1)%4];sync()}});
+$('#segFocus').addEventListener('click',e=>{const b=e.target.closest('button');if(b){st.focus=b.dataset.f;renderS4()}});
+$('#segAl').addEventListener('click',e=>{const b=e.target.closest('button');if(b){st.al=b.dataset.a;renderS4()}});
+$('#turnBtn').addEventListener('click',()=>{st.turn++;updTurn()});
+['#odVal','#idVal'].forEach(s=>$(s).addEventListener('input',renderSummary));
+$('#btnLang').addEventListener('click',()=>{lang=lang==='he'?'en':'he';applyLang()});
+$('#btnPause').addEventListener('click',()=>{document.body.classList.toggle('paused');applyLang()});
+$('#btnPdf').addEventListener('click',()=>window.print());
+$('#copyBtn').addEventListener('click',async()=>{
+  const txt=$('#summary').textContent;
+  try{await navigator.clipboard.writeText(txt)}catch(_){const a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}
+  $('#copyBtn').textContent=t('copied');setTimeout(()=>$('#copyBtn').textContent=t('copyBtn'),1800);
+});
+window.addEventListener('beforeprint',()=>$$('.reveal').forEach(e=>e.classList.add('in')));
+beltLabels();applyLang();
+</script>
+</body>
+</html>
