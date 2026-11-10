@@ -503,7 +503,7 @@ he:{
  fAddr:'רח\' המסגר 4, נס-ציונה',fTel:'טלפון',fFax:'פקס'
 }};
 
-let lang=(new URLSearchParams(location.search).get('lang')||((navigator.language||'').startsWith('he')?'he':'en'));
+let lang=(new URLSearchParams(location.search).get('lang')||'he');
 if(!T[lang])lang='en';
 const st={wound:'out',edge:'head',al:'none',focus:'both',turn:0};
 const t=k=>T[lang][k];
