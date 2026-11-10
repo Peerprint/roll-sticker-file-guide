@@ -97,6 +97,8 @@ svg{display:block;max-width:100%;height:auto}
 @keyframes belt{to{transform:translateX(120px)}}
 .pf{transform:scaleY(var(--flip,1));transition:transform .7s}
 .pr{transform:rotate(var(--rot,0deg));transition:transform .7s}
+#beltSvg .barL{display:none}#beltSvg.rev .barL{display:inline}#beltSvg.rev .barR{display:none}#beltSvg.rev .belt{animation-direction:reverse}
+#rollSvg{transition:transform .5s}#rollSvg.mir{transform:scaleX(-1)}
 .nowshow{margin-top:8px;font-weight:700;color:var(--brand-d);font-size:1.05rem}
 .dash{stroke-dasharray:7 6;animation:dash 1s linear infinite}
 @keyframes dash{to{stroke-dashoffset:-26}}
@@ -114,6 +116,7 @@ svg{display:block;max-width:100%;height:auto}
 .mbelt{}
 .pos.sel .mbelt{animation:mbelt 1.5s linear infinite}
 @keyframes mbelt{to{transform:translateX(60px)}}
+.pos.sel .mbelt.rv{animation-direction:reverse}
 .result{display:flex;align-items:center;gap:16px;background:var(--brand);color:#fff;border-radius:16px;padding:14px 18px;margin-top:16px;flex-wrap:wrap}
 .result .big{font-size:3rem;font-weight:800;line-height:1;background:#fff;color:var(--brand-d);width:78px;height:78px;border-radius:16px;display:grid;place-items:center}
 .result .d{font-size:1.15rem;font-weight:600}
@@ -290,7 +293,7 @@ footer b{color:var(--ink)}
           <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="var(--accent)"/></marker></defs>
           <rect x="0" y="52" width="420" height="136" id="band" fill="var(--liner)" opacity=".55"/>
           <g clip-path="url(#bandClip)"><g class="belt" id="belt"></g></g>
-          <line x1="150" y1="28" x2="404" y2="28" stroke="var(--accent)" stroke-width="4" marker-end="url(#ah)" class="dash"/>
+          <line id="unwLine" x1="150" y1="28" x2="404" y2="28" stroke="var(--accent)" stroke-width="4" marker-end="url(#ah)" class="dash"/>
           <text id="unwTxt" x="150" y="18" font-size="14" font-weight="700" fill="var(--ink)" font-family="inherit"></text>
           <text id="firstTxt" x="410" y="216" text-anchor="end" font-size="14" font-weight="700" fill="var(--accent)" font-family="inherit"></text>
           <text id="ghostTxt" x="6" y="238" font-size="12.5" fill="var(--mute)" font-family="inherit"></text>
@@ -562,8 +565,8 @@ function beltLabels(){
   let s='';
   for(let i=0;i<5;i++){const x=i*120-110;
     s+=`<g transform="translate(${x},0)"><rect x="0" y="70" width="100" height="100" rx="10" class="lab" fill="#fff" stroke="#8fa2b4" stroke-width="2"/>
-    <rect x="90" y="70" width="10" height="100" rx="4" fill="var(--accent)"/>
-    <g transform="translate(46,120)"><g class="pf"><g class="pr"><g transform="scale(.5)" class="pg">${pman(false)}</g></g></g></g></g>`;}
+    <rect class="barR" x="90" y="70" width="10" height="100" rx="4" fill="var(--accent)"/><rect class="barL" x="0" y="70" width="10" height="100" rx="4" fill="var(--accent)"/>
+    <g transform="translate(50,120)"><g class="pf"><g class="pr"><g transform="scale(.5)" class="pg">${pman(false)}</g></g></g></g></g>`;}
   $('#belt').innerHTML=s;
 }
 function renderS2(){
@@ -573,28 +576,30 @@ function renderS2(){
   $('#viewSideCap').innerHTML=`<b>${t('viewSide')}</b> – ${st.wound==='out'?t('outCap'):t('inCap')}`;
   $('#viewFrontCap').innerHTML=`<b>${t('viewFront')}</b>`;
   const svg=$('#beltSvg'),out=st.wound==='out';
-  svg.style.setProperty('--rot',setRot(ANG[st.edge])+'deg');
-  svg.style.setProperty('--flip',out?1:-1);
-  $$('#belt .pg').forEach(g=>g.style.opacity=out?1:.38);
-  $$('#belt .lab').forEach(r=>r.setAttribute('fill',out?'#fff':'#e4eaf0'));
+  svg.style.setProperty('--rot',setRot(ANG[st.edge]+(out?0:180))+'deg');
+  svg.style.setProperty('--flip',1);
+  svg.classList.toggle('rev',!out);$('#rollSvg').classList.toggle('mir',!out);
+  const ul=$('#unwLine');ul.setAttribute('x1',out?150:404);ul.setAttribute('x2',out?404:150);
+  $('#unwTxt').setAttribute('x',out?150:404);$('#unwTxt').setAttribute('text-anchor',out?'start':'end');
+  $('#firstTxt').setAttribute('x',out?410:10);$('#firstTxt').setAttribute('text-anchor',out?'end':'start');
   $('#band').setAttribute('fill',out?'var(--liner)':'var(--label)');
   $('#unwTxt').textContent=t('unw');
-  $('#firstTxt').textContent='▶ '+t('first');
-  $('#ghostTxt').textContent=out?'':t('ghost');
+  $('#firstTxt').textContent=(st.wound==='out'?'▶ ':'◀ ')+t('first');
+  $('#ghostTxt').textContent='';
   $('#nowShow').textContent=`${t('nowShow')} ${out?t('woundOut'):t('woundIn')} · ${edgeTxt(st.edge)}`;
 }
 
 /* ---------- section 3 ---------- */
 function miniCard(p){
-  const out=p<=4,e=EDGES[(p-1)%4],ang=ANG[e],fl=out?1:-1;
+  const out=p<=4,e=EDGES[(p-1)%4],ang=ANG[e]+(out?0:180);
   let items='';for(let i=0;i<5;i++){const x=i*60-40;
-    items+=`<g transform="translate(${x},0)"><rect x="0" y="33" width="46" height="46" rx="6" fill="${out?'#fff':'#e4eaf0'}" stroke="#8fa2b4" stroke-width="1.5"/><rect x="42" y="33" width="4" height="46" rx="2" fill="var(--accent)"/>
-    <g transform="translate(21,56) scale(1,${fl}) rotate(${ang}) scale(.25)" opacity="${out?1:.4}">${pman(false)}</g></g>`;}
+    items+=`<g transform="translate(${x},0)"><rect x="0" y="33" width="46" height="46" rx="6" fill="#fff" stroke="#8fa2b4" stroke-width="1.5"/><rect x="${out?42:0}" y="33" width="4" height="46" rx="2" fill="var(--accent)"/>
+    <g transform="translate(23,56) rotate(${ang}) scale(.25)">${pman(false)}</g></g>`;}
   return `<button class="pos" data-p="${p}" aria-pressed="false"><span class="num">${p}</span>
   <svg viewBox="0 0 200 112"><defs><clipPath id="mc${p}"><rect x="0" y="28" width="200" height="56"/></clipPath></defs>
   <rect x="0" y="28" width="200" height="56" fill="${out?'var(--liner)':'var(--label)'}" opacity=".55"/>
-  <g clip-path="url(#mc${p})"><g class="mbelt">${items}</g></g>
-  <path d="M110 14H186" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M180 9L190 14L180 19Z" fill="var(--accent)"/>
+  <g clip-path="url(#mc${p})"><g class="mbelt ${out?'':'rv'}">${items}</g></g>
+  ${out?'<path d="M110 14H186" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M180 9L190 14L180 19Z" fill="var(--accent)"/>':'<path d="M190 14H114" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M120 9L110 14L120 19Z" fill="var(--accent)"/>'}
   <text x="100" y="104" text-anchor="middle" font-size="11" fill="#5b6b7b" font-family="inherit">${out?'OUT':'IN'}</text></svg>
   <div class="tg">${edgeTxt(e)}</div></button>`;
 }
